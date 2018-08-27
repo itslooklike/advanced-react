@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { reduxForm, Field } from 'redux-form';
 import emailValidator from 'email-validator';
 
-import ErrorField from './ErrorField';
+import ErrorField from '../common/ErrorField';
 
 const validate = ({ email, password }) => {
   const errors = {};

@@ -11,7 +11,7 @@ class ErrorField extends Component {
     return (
       <div>
         <label>
-          {input.name} <input {...input} {...{ type }} />
+          <input {...input} {...{ type }} />
         </label>
         {touched && error && <div style={{ color: 'red' }}>{error}</div>}
       </div>

@@ -16,7 +16,7 @@ class SignInForm extends Component {
           </div>
           <div>
             <label>
-              Password <Field name="password" component="input" />
+              Password <Field name="password" component="input" type="password" />
             </label>
           </div>
           <div>

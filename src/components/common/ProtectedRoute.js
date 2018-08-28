@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+
 import { moduleName } from '../../ducks/auth';
 import UnAuthorized from './UnAuthorized';
 

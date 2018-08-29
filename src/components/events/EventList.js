@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { moduleName, eventsFetch } from '../../ducks/events';
+import Spinner from '../common/Spinner';
+import { eventsFetch, eventsListSelector } from '../../ducks/events';
 
 class EventList extends Component {
   componentDidMount() {
@@ -9,16 +10,22 @@ class EventList extends Component {
   }
 
   render() {
-    const {
-      events: { entities, loading, error },
-    } = this.props;
-
-    console.log('events', this.props.events.toJS());
+    const { events } = this.props;
 
     return (
       <div>
         <h2>EventList Data HERE</h2>
-        {error && <div>{JSON.stringify(error.message)}</div>}
+
+        {events.length ? (
+          <div>
+            {events.map((item) => (
+              <div key={item.uid}>{item.title}</div>
+            ))}
+          </div>
+        ) : (
+          <Spinner />
+        )}
+        {/* {error && <div>{JSON.stringify(error.message)}</div>} */}
       </div>
     );
   }
@@ -26,7 +33,7 @@ class EventList extends Component {
 
 export default connect(
   (state) => ({
-    events: state[moduleName],
+    events: eventsListSelector(state),
   }),
   {
     eventsFetch,

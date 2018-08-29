@@ -6,7 +6,7 @@ import store from './redux';
 import Root from './components/Root';
 import history from './history';
 
-import './mocks/index';
+// import './mocks/index';
 
 class App extends Component {
   render() {

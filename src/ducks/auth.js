@@ -103,6 +103,9 @@ export const signInSaga = function*() {
       );
 
       yield put({ type: SIGN_IN_SUCCESS, payload: { user } });
+
+      // TODO: возможно не тут
+      yield put(push('/'));
     } catch (error) {
       yield put({ type: SIGN_IN_ERROR, error });
     }

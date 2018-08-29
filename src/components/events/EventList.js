@@ -4,10 +4,15 @@ import { connect } from 'react-redux';
 import Spinner from '../common/Spinner';
 import { eventsFetch, eventsListSelector } from '../../ducks/events';
 
-class EventList extends Component {
+export class EventList extends Component {
   componentDidMount() {
     this.props.eventsFetch();
   }
+
+  onClickHandler = (uid) => () => {
+    const { selectEvent } = this.props;
+    selectEvent && selectEvent(uid);
+  };
 
   render() {
     const { events } = this.props;
@@ -18,8 +23,14 @@ class EventList extends Component {
 
         {events.length ? (
           <div>
-            {events.map((item) => (
-              <div key={item.uid}>{item.title}</div>
+            {events.map((event) => (
+              <div
+                key={event.uid}
+                className="test-list-row"
+                onClick={this.onClickHandler(event.uid)}
+              >
+                {event.title}
+              </div>
             ))}
           </div>
         ) : (

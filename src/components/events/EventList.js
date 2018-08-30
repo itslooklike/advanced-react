@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Spinner from '../common/Spinner';
-import { eventsFetch, eventsListSelector } from '../../ducks/events';
+import { eventsFetch, selectEvent, eventsListSelector } from '../../ducks/events';
 
 export class EventList extends Component {
   componentDidMount() {
@@ -48,5 +48,6 @@ export default connect(
   }),
   {
     eventsFetch,
+    selectEvent,
   }
 )(EventList);

@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { Record, OrderedMap } from 'immutable';
+import { Record, OrderedMap, OrderedSet } from 'immutable';
 import { put, all, take, call } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 
@@ -13,9 +13,12 @@ export const EVENTS_FETCH_REQUEST = `${appName}/${moduleName}/EVENTS_FETCH_REQUE
 export const EVENTS_FETCH_SUCCESS = `${appName}/${moduleName}/EVENTS_FETCH_SUCCESS`;
 export const EVENTS_FETCH_ERROR = `${appName}/${moduleName}/EVENTS_FETCH_ERROR`;
 
+export const SELECT_EVENT = `${appName}/${moduleName}/SELECT_EVENT`;
+
 // Reducer
 const ReducerState = Record({
   entities: new OrderedMap({}),
+  selected: new OrderedSet([]),
   loading: false,
   error: null,
 });
@@ -36,12 +39,15 @@ export default function reducer(state = new ReducerState(), action) {
   switch (type) {
     case EVENTS_FETCH_REQUEST:
       return state.set('loading', true).set('error', null);
-
     case EVENTS_FETCH_SUCCESS:
       return state.set('loading', false).set('entities', fbDataToEntities(payload, EventRecord));
-
     case EVENTS_FETCH_ERROR:
       return state.set('loading', false).set('error', error);
+
+    case SELECT_EVENT:
+      return state.selected.contains(payload.uid)
+        ? state.update('selected', (selected) => selected.remove(payload.uid))
+        : state.update('selected', (selected) => selected.add(payload.uid));
 
     default:
       return state;
@@ -59,6 +65,13 @@ export const eventsListSelector = createSelector(entitiesSelector, (entities) =>
 export function eventsFetch() {
   return {
     type: EVENTS_FETCH_REQUEST,
+  };
+}
+
+export function selectEvent(uid) {
+  return {
+    type: SELECT_EVENT,
+    payload: { uid },
   };
 }
 

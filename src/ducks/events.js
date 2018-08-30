@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import { Record, OrderedMap, OrderedSet } from 'immutable';
-import { put, all, take, call } from 'redux-saga/effects';
+import { put, all, call, takeEvery, spawn, fork, cancel } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import { createSelector } from 'reselect';
 
 import { fbDataToEntities } from './utils';
@@ -76,27 +77,41 @@ export function selectEvent(uid) {
 }
 
 // Sagas
-export const eventsFetchSaga = function*(action) {
-  while (true) {
-    yield take(EVENTS_FETCH_REQUEST);
+export const eventsFetchSaga = function*() {
+  try {
+    const ref = firebase.database().ref('events');
+    const data = yield call([ref, ref.once], 'value');
 
-    try {
-      const ref = firebase.database().ref('events');
-      const data = yield call([ref, ref.once], 'value');
-
-      yield put({
-        type: EVENTS_FETCH_SUCCESS,
-        payload: data.val(),
-      });
-    } catch (error) {
-      yield put({
-        type: EVENTS_FETCH_ERROR,
-        error,
-      });
-    }
+    yield put({
+      type: EVENTS_FETCH_SUCCESS,
+      payload: data.val(),
+    });
+  } catch (error) {
+    yield put({
+      type: EVENTS_FETCH_ERROR,
+      error,
+    });
   }
 };
 
+export const bgSyncSaga = function*() {
+  try {
+    while (true) {
+      yield delay(2 * 1000);
+      yield call(eventsFetchSaga);
+    }
+  } finally {
+    console.log('👋');
+  }
+};
+
+export const cancelBgSaga = function*() {
+  const task = yield fork(bgSyncSaga);
+  yield delay(5 * 1000);
+  yield cancel(task);
+};
+
 export const saga = function*() {
-  yield all([eventsFetchSaga()]);
+  yield spawn(cancelBgSaga);
+  yield all([takeEvery(EVENTS_FETCH_REQUEST, eventsFetchSaga)]);
 };
